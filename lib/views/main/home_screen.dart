@@ -4,7 +4,6 @@ import 'package:edulight/views/auth/profile_screen.dart'; // Import the ProfileS
 import 'package:edulight/views/main/home_page.dart';
 import 'package:provider/provider.dart';
 import 'package:edulight/models/user_provider.dart';
-import 'package:hive/hive.dart';
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -18,15 +17,15 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
-    _checkLoginStatus();
+    //   _checkLoginStatus();
   }
 
-  void _checkLoginStatus() {
-    var box = Hive.box('userBox');
-    setState(() {
-      _isLoggedIn = box.get('isLoggedIn', defaultValue: false);
-    });
-  }
+  // void _checkLoginStatus() {
+  //   var box = Hive.box('userBox');
+  //   setState(() {
+  //     _isLoggedIn = box.get('isLoggedIn', defaultValue: false);
+  //   });
+  // }
 
   static List<Widget> _widgetOptions = <Widget>[
     HomePage(), // HomePage defaults to Grade 8
@@ -40,18 +39,18 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
-  void _logout() {
-    var box = Hive.box('userBox');
-    box.put('isLoggedIn', false);
-    setState(() {
-      _isLoggedIn = false;
-    });
-    // Optionally, navigate to the login screen
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(builder: (context) => LoginScreen()),
-    );
-  }
+  // void _logout() {
+  //   var box = Hive.box('userBox');
+  //   box.put('isLoggedIn', false);
+  //   setState(() {
+  //     _isLoggedIn = false;
+  //   });
+  //   // Optionally, navigate to the login screen
+  //   Navigator.pushReplacement(
+  //     context,
+  //     MaterialPageRoute(builder: (context) => LoginScreen()),
+  //   );
+  // }
 
   @override
   Widget build(BuildContext context) {

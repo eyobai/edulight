@@ -5,7 +5,7 @@ import 'package:edulight/views/auth/register_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:edulight/models/user.dart';
 import 'package:edulight/models/user_provider.dart';
-import 'package:hive/hive.dart';
+//import 'package:hive/hive.dart';
 
 class LoginScreen extends StatelessWidget {
   final AuthController _authController = AuthController();
@@ -86,9 +86,9 @@ class LoginScreen extends StatelessWidget {
               _passwordController.text,
             );
             if (student != null) {
-              var box = Hive.box('userBox');
-              box.put('isLoggedIn', true);
-              box.put('userName', student.name);
+              //  //   var box = Hive.box('userBox');
+              //     box.put('isLoggedIn', true);
+              //     box.put('userName', student.name);
 
               print('Login successful: ${student.toString()}');
               print('Student Name: ${student.name}');
