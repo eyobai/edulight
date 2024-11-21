@@ -12,6 +12,17 @@ class _HomePageState extends State<HomePage> {
   final GradeController _gradeController = GradeController();
   GradeData? _gradeData;
 
+  @override
+  void initState() {
+    super.initState();
+    _fetchInitialGradeData(); // Fetch Grade 8 data on initialization
+  }
+
+  void _fetchInitialGradeData() async {
+    _gradeData = await _gradeController.fetchGradeData(_selectedGrade);
+    setState(() {}); // Update the UI with the fetched data
+  }
+
   void _onGradeSelected(int grade) async {
     setState(() {
       _selectedGrade = grade;
@@ -27,16 +38,6 @@ class _HomePageState extends State<HomePage> {
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
-        actions: [
-          IconButton(
-            icon: Icon(Icons.search, color: Colors.black),
-            onPressed: () {},
-          ),
-          IconButton(
-            icon: Icon(Icons.calendar_today, color: Colors.black),
-            onPressed: () {},
-          ),
-        ],
       ),
       backgroundColor: Colors.blue.shade50,
       body: Padding(
