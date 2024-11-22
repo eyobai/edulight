@@ -15,7 +15,7 @@ class RegisterScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Register')),
+      appBar: AppBar(),
       body: SingleChildScrollView(
         padding: EdgeInsets.all(16.0),
         child: Form(
@@ -24,15 +24,20 @@ class RegisterScreen extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              const SizedBox(height: 60.0),
+              // const SizedBox(height: 60.0),
               const Text(
                 "Sign up",
-                style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
+                style: TextStyle(
+                  fontSize: 30,
+                  fontWeight: FontWeight.bold,
+                ),
+                textAlign: TextAlign.center,
               ),
               const SizedBox(height: 20),
               Text(
                 "Create your account",
                 style: TextStyle(fontSize: 15, color: Colors.grey[700]),
+                textAlign: TextAlign.center,
               ),
               const SizedBox(height: 20),
               TextFormField(
@@ -43,7 +48,7 @@ class RegisterScreen extends StatelessWidget {
                     borderRadius: BorderRadius.circular(18),
                     borderSide: BorderSide.none,
                   ),
-                  fillColor: Colors.purple.withOpacity(0.1),
+                  fillColor: Colors.blue.withOpacity(0.1),
                   filled: true,
                   prefixIcon: const Icon(Icons.person),
                 ),
@@ -63,7 +68,7 @@ class RegisterScreen extends StatelessWidget {
                     borderRadius: BorderRadius.circular(18),
                     borderSide: BorderSide.none,
                   ),
-                  fillColor: Colors.purple.withOpacity(0.1),
+                  fillColor: Colors.blue.withOpacity(0.1),
                   filled: true,
                   prefixIcon: const Icon(Icons.email),
                 ),
@@ -83,7 +88,7 @@ class RegisterScreen extends StatelessWidget {
                     borderRadius: BorderRadius.circular(18),
                     borderSide: BorderSide.none,
                   ),
-                  fillColor: Colors.purple.withOpacity(0.1),
+                  fillColor: Colors.blue.withOpacity(0.1),
                   filled: true,
                   prefixIcon: const Icon(Icons.phone),
                 ),
@@ -103,7 +108,7 @@ class RegisterScreen extends StatelessWidget {
                     borderRadius: BorderRadius.circular(18),
                     borderSide: BorderSide.none,
                   ),
-                  fillColor: Colors.purple.withOpacity(0.1),
+                  fillColor: Colors.blue.withOpacity(0.1),
                   filled: true,
                   prefixIcon: const Icon(Icons.password),
                 ),
@@ -124,7 +129,7 @@ class RegisterScreen extends StatelessWidget {
                     borderRadius: BorderRadius.circular(18),
                     borderSide: BorderSide.none,
                   ),
-                  fillColor: Colors.purple.withOpacity(0.1),
+                  fillColor: Colors.blue.withOpacity(0.1),
                   filled: true,
                   prefixIcon: const Icon(Icons.password),
                 ),
@@ -165,11 +170,11 @@ class RegisterScreen extends StatelessWidget {
                 style: ElevatedButton.styleFrom(
                   shape: const StadiumBorder(),
                   padding: const EdgeInsets.symmetric(vertical: 16),
-                  backgroundColor: Colors.purple,
+                  backgroundColor: Colors.blue,
                 ),
                 child: const Text(
                   "Register",
-                  style: TextStyle(fontSize: 20),
+                  style: TextStyle(fontSize: 20, color: Colors.white),
                 ),
               ),
               const Center(child: Text("Or")),
@@ -185,7 +190,7 @@ class RegisterScreen extends StatelessWidget {
                       );
                     },
                     child: const Text("Login",
-                        style: TextStyle(color: Colors.purple)),
+                        style: TextStyle(color: Colors.blue)),
                   ),
                 ],
               ),
