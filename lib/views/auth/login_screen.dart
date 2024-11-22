@@ -5,7 +5,7 @@ import 'package:edulight/views/auth/register_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:edulight/models/user.dart';
 import 'package:edulight/models/user_provider.dart';
-//import 'package:hive/hive.dart';
+import 'package:hive/hive.dart';
 
 class LoginScreen extends StatelessWidget {
   final AuthController _authController = AuthController();
@@ -60,7 +60,7 @@ class LoginScreen extends StatelessWidget {
               border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(18),
                   borderSide: BorderSide.none),
-              fillColor: Colors.purple.withOpacity(0.1),
+              fillColor: Colors.blue.withOpacity(0.1),
               filled: true,
               prefixIcon: const Icon(Icons.email)),
         ),
@@ -72,7 +72,7 @@ class LoginScreen extends StatelessWidget {
             border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(18),
                 borderSide: BorderSide.none),
-            fillColor: Colors.purple.withOpacity(0.1),
+            fillColor: Colors.blue.withOpacity(0.1),
             filled: true,
             prefixIcon: const Icon(Icons.password),
           ),
@@ -81,6 +81,10 @@ class LoginScreen extends StatelessWidget {
         const SizedBox(height: 10),
         ElevatedButton(
           onPressed: () async {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) => HomeScreen()),
+            );
             var student = await _authController.login(
               _emailController.text,
               _passwordController.text,
@@ -110,16 +114,20 @@ class LoginScreen extends StatelessWidget {
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(content: Text('Login failed')),
               );
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(builder: (context) => HomeScreen()),
+              );
             }
           },
           style: ElevatedButton.styleFrom(
             shape: const StadiumBorder(),
             padding: const EdgeInsets.symmetric(vertical: 16),
-            backgroundColor: Colors.purple,
+            backgroundColor: Colors.blue,
           ),
           child: const Text(
             "Login",
-            style: TextStyle(fontSize: 20),
+            style: TextStyle(fontSize: 20, color: Colors.white),
           ),
         )
       ],
@@ -131,7 +139,7 @@ class LoginScreen extends StatelessWidget {
       onPressed: () {},
       child: const Text(
         "Forgot password?",
-        style: TextStyle(color: Colors.purple),
+        style: TextStyle(color: Colors.blue),
       ),
     );
   }
@@ -148,7 +156,7 @@ class LoginScreen extends StatelessWidget {
               MaterialPageRoute(builder: (context) => RegisterScreen()),
             );
           },
-          child: const Text("Sign Up", style: TextStyle(color: Colors.purple)),
+          child: const Text("Sign Up", style: TextStyle(color: Colors.blue)),
         )
       ],
     );
