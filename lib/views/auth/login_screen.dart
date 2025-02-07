@@ -6,10 +6,12 @@ import 'package:provider/provider.dart';
 import 'package:edulight/models/user.dart';
 import 'package:edulight/models/user_provider.dart';
 import 'package:hive/hive.dart';
+import 'package:flutter/services.dart';
 
 class LoginScreen extends StatelessWidget {
   final AuthController _authController = AuthController();
-  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _phoneController =
+      TextEditingController(text: '+251');
   final TextEditingController _passwordController = TextEditingController();
 
   @override
@@ -41,7 +43,7 @@ class LoginScreen extends StatelessWidget {
     return const Column(
       children: [
         Text(
-          "Welcome Back",
+          "Welcome",
           style: TextStyle(fontSize: 40, fontWeight: FontWeight.bold),
         ),
         Text("Enter your credential to login"),
@@ -54,15 +56,29 @@ class LoginScreen extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         TextField(
-          controller: _emailController,
+          controller: _phoneController,
           decoration: InputDecoration(
-              hintText: "Email",
-              border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(18),
-                  borderSide: BorderSide.none),
-              fillColor: Colors.blue.withOpacity(0.1),
-              filled: true,
-              prefixIcon: const Icon(Icons.email)),
+            hintText: "Phone Number",
+            border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(18),
+                borderSide: BorderSide.none),
+            fillColor: Colors.blue.withOpacity(0.1),
+            filled: true,
+            prefixIcon: const Icon(Icons.phone),
+          ),
+          keyboardType: TextInputType.phone,
+          style: const TextStyle(fontSize: 16),
+          inputFormatters: [
+            FilteringTextInputFormatter.allow(RegExp(r'^\+251\d*')),
+          ],
+          onChanged: (value) {
+            if (!value.startsWith('+251')) {
+              _phoneController.text = '+251';
+              _phoneController.selection = TextSelection.fromPosition(
+                TextPosition(offset: _phoneController.text.length),
+              );
+            }
+          },
         ),
         const SizedBox(height: 10),
         TextField(
@@ -81,42 +97,35 @@ class LoginScreen extends StatelessWidget {
         const SizedBox(height: 10),
         ElevatedButton(
           onPressed: () async {
-            Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(builder: (context) => HomeScreen()),
-            );
-            var student = await _authController.login(
-              _emailController.text,
+            String phoneNumber = _phoneController.text.trim();
+            print('Attempting to login with phone number: $phoneNumber');
+            var student = await _authController.loginWithPhone(
+              phoneNumber,
               _passwordController.text,
             );
             if (student != null) {
-              //  //   var box = Hive.box('userBox');
-              //     box.put('isLoggedIn', true);
-              //     box.put('userName', student.name);
-
-              print('Login successful: ${student.toString()}');
-              print('Student Name: ${student.name}');
               Provider.of<UserProvider>(context, listen: false).setUser(
                 User(
-                    email: student.email,
-                    name: student.name,
-                    userId: student.id.toString()),
+                  email: student.email,
+                  name: student.name,
+                  userId: student.id.toString(),
+                ),
               );
+
+              var box = Hive.box('userBox');
+              box.put('isLoggedIn', true);
+
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(content: Text('Login successful')),
               );
+
               Navigator.pushReplacement(
                 context,
                 MaterialPageRoute(builder: (context) => HomeScreen()),
               );
             } else {
-              print('Login failed');
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(content: Text('Login failed')),
-              );
-              Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(builder: (context) => HomeScreen()),
               );
             }
           },
