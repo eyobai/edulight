@@ -37,8 +37,9 @@ class ApiService {
     }
   }
 
-  Future<void> register({
+  Future<Map<String, dynamic>?> register({
     required String name,
+    required String lastName,
     required String email,
     required String phone,
     required String password,
@@ -52,6 +53,7 @@ class ApiService {
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode({
           'name': name,
+          'last_name': lastName,
           'email': email,
           'phone': phone,
           'password': password,
@@ -60,19 +62,28 @@ class ApiService {
         }),
       );
       print('Register response: ${response.body}');
+
+      final data = jsonDecode(response.body);
+
       if (response.statusCode == 200 || response.statusCode == 201) {
-        final data = jsonDecode(response.body);
         if (data.containsKey('token')) {
-          _token = data['token']; // Store the token
+          _token = data['token'];
           var box = Hive.box('userBox');
-          box.put('token', _token); // Save token to Hive for persistence
-          box.put('isLoggedIn', true); // Set login status
+          box.put('token', _token);
+          box.put('isLoggedIn', true);
           print('Registration successful: Token stored');
+          return data;
         } else {
-          print('Registration failed: Token not found');
+          print('Registration failed: Token not found in response');
+          throw Exception('Token not found in response');
         }
+      } else if (response.statusCode == 422) {
+        // Handle validation errors more gracefully
+        final errorMessage = data.entries.map((e) => "${e.value}").join(", ");
+        throw Exception(errorMessage);
       } else {
-        print('Registration failed: ${response.statusCode}');
+        print('Registration failed with status code: ${response.statusCode}');
+        throw Exception('Registration failed: ${response.statusCode}');
       }
     } catch (e) {
       print('Error during registration request: $e');

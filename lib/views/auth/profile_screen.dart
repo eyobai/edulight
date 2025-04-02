@@ -36,6 +36,10 @@ class ProfileScreen extends StatelessWidget {
       if (userId == null) {
         throw Exception('User ID not available. Please log in again.');
       }
+
+      // Print the user ID
+      print('User ID is: $userId');
+
       final apiService = Provider.of<ApiService>(context, listen: false);
       return await apiService.fetchStudentData(userId.toString());
     } catch (e) {

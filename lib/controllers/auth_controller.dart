@@ -27,26 +27,35 @@ class AuthController {
     required String phone,
     required String password,
     required String passwordConfirmation,
+    required String lastName,
   }) async {
     try {
-      await _apiService.register(
+      final data = await _apiService.register(
         name: name,
+        lastName: lastName,
         email: email,
         phone: phone,
         password: password,
         passwordConfirmation: passwordConfirmation,
       );
 
-      var box = Hive.box('userBox');
-      String? token = box.get('token');
+      if (data != null) {
+        // Extract the 'id' from the 'student' object
+        if (data.containsKey('student') && data['student'].containsKey('id')) {
+          String studentId =
+              data['student']['id'].toString(); // Fetch the actual student ID
 
-      if (token != null) {
-        // Registration was successful
-        print('Registration successful');
-        return true;
+          var box = Hive.box('userBox');
+          box.put('userId', studentId); // Store the student ID in Hive
+
+          print('Registration successful: Student ID stored');
+          return true;
+        } else {
+          print('Registration failed: Student ID not found');
+          return false;
+        }
       } else {
-        // Handle registration failure
-        print('Registration failed: Token not found');
+        print('Registration failed: No data returned');
         return false;
       }
     } catch (e) {

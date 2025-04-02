@@ -1,13 +1,21 @@
 import 'package:edulight/views/auth/login_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:edulight/controllers/auth_controller.dart';
+import 'package:provider/provider.dart';
+import 'package:edulight/models/user.dart';
+import 'package:edulight/models/user_provider.dart';
+import 'package:hive/hive.dart';
+import 'package:edulight/views/main/home_screen.dart';
+import 'package:flutter/services.dart';
 
 class RegisterScreen extends StatelessWidget {
   final AuthController _authController = AuthController();
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _lastNameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
-  final TextEditingController _phoneController = TextEditingController();
+  final TextEditingController _phoneController =
+      TextEditingController(text: '+251');
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _passwordConfirmController =
       TextEditingController();
@@ -24,7 +32,6 @@ class RegisterScreen extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              // const SizedBox(height: 60.0),
               const Text(
                 "Sign up",
                 style: TextStyle(
@@ -43,7 +50,7 @@ class RegisterScreen extends StatelessWidget {
               TextFormField(
                 controller: _nameController,
                 decoration: InputDecoration(
-                  hintText: "Name",
+                  hintText: "First Name",
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(18),
                     borderSide: BorderSide.none,
@@ -54,7 +61,27 @@ class RegisterScreen extends StatelessWidget {
                 ),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'Please enter your name';
+                    return 'Please enter your first name';
+                  }
+                  return null;
+                },
+              ),
+              const SizedBox(height: 20),
+              TextFormField(
+                controller: _lastNameController,
+                decoration: InputDecoration(
+                  hintText: "Last Name",
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(18),
+                    borderSide: BorderSide.none,
+                  ),
+                  fillColor: Colors.blue.withOpacity(0.1),
+                  filled: true,
+                  prefixIcon: const Icon(Icons.person),
+                ),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter your last name';
                   }
                   return null;
                 },
@@ -83,7 +110,7 @@ class RegisterScreen extends StatelessWidget {
               TextFormField(
                 controller: _phoneController,
                 decoration: InputDecoration(
-                  hintText: "Phone",
+                  hintText: "Phone Number",
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(18),
                     borderSide: BorderSide.none,
@@ -92,9 +119,21 @@ class RegisterScreen extends StatelessWidget {
                   filled: true,
                   prefixIcon: const Icon(Icons.phone),
                 ),
+                keyboardType: TextInputType.phone,
+                inputFormatters: [
+                  FilteringTextInputFormatter.allow(RegExp(r'^\+251\d{0,9}$')),
+                ],
+                onChanged: (value) {
+                  if (!value.startsWith('+251')) {
+                    _phoneController.text = '+251';
+                    _phoneController.selection = TextSelection.fromPosition(
+                      TextPosition(offset: _phoneController.text.length),
+                    );
+                  }
+                },
                 validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter your phone number';
+                  if (value == null || value.isEmpty || value.length < 12) {
+                    return 'Please enter a valid phone number';
                   }
                   return null;
                 },
@@ -148,21 +187,53 @@ class RegisterScreen extends StatelessWidget {
               ElevatedButton(
                 onPressed: () async {
                   if (_formKey.currentState!.validate()) {
-                    bool success = await _authController.register(
-                      name: _nameController.text,
-                      email: _emailController.text,
-                      phone: _phoneController.text,
-                      password: _passwordController.text,
-                      passwordConfirmation: _passwordConfirmController.text,
-                    );
-                    if (success) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text('Registration successful')),
+                    try {
+                      bool success = await _authController.register(
+                        name: _nameController.text,
+                        lastName: _lastNameController.text,
+                        email: _emailController.text,
+                        phone: _phoneController.text,
+                        password: _passwordController.text,
+                        passwordConfirmation: _passwordConfirmController.text,
                       );
-                      // Navigate to another screen if needed
-                    } else {
+
+                      if (success) {
+                        // Retrieve the user ID from Hive
+                        var box = Hive.box('userBox');
+                        String userId =
+                            box.get('userId', defaultValue: 'unknown_user_id');
+
+                        // Set user data in provider with the correct user ID
+                        Provider.of<UserProvider>(context, listen: false)
+                            .setUser(
+                          User(
+                            email: _emailController.text,
+                            name:
+                                "${_nameController.text} ${_lastNameController.text}",
+                            userId: userId,
+                          ),
+                        );
+
+                        // Update Hive box
+                        box.put('isLoggedIn', true);
+
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                              content: Text('Registration successful')),
+                        );
+
+                        // Navigate to HomeScreen
+                        Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(builder: (context) => HomeScreen()),
+                        );
+                      }
+                    } catch (e) {
                       ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text('Registration failed')),
+                        SnackBar(
+                          content: Text('Registration failed: ${e.toString()}'),
+                          backgroundColor: Colors.red,
+                        ),
                       );
                     }
                   }

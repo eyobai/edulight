@@ -5,16 +5,23 @@ import 'package:edulight/views/auth/register_screen.dart';
 import 'package:edulight/views/main/home_screen.dart';
 import 'package:edulight/models/user_provider.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:edulight/models/api_service.dart';
+import 'package:edulight/views/subscription/subscription_screen.dart';
 
 void main() async {
-  // Initialize Hive
+  WidgetsFlutterBinding.ensureInitialized();
   await Hive.initFlutter();
   await Hive.openBox('userBox');
 
   runApp(
     MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (_) => UserProvider()),
+        Provider<ApiService>(
+          create: (_) => ApiService(),
+        ),
+        ChangeNotifierProvider<UserProvider>(
+          create: (_) => UserProvider(),
+        ),
       ],
       child: MyApp(),
     ),
@@ -30,12 +37,16 @@ class MyApp extends StatelessWidget {
 
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'Your App',
+      title: 'EduLight',
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
+      ),
       initialRoute: isLoggedIn ? '/home' : '/',
       routes: {
         '/': (context) => LoginScreen(),
         '/register': (context) => RegisterScreen(),
         '/home': (context) => HomeScreen(),
+        '/subscription': (context) => SubscriptionScreen(),
       },
     );
   }

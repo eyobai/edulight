@@ -42,34 +42,36 @@ class MenuScreen extends StatelessWidget {
             );
           },
         ),
-        ListTile(
-          leading: Icon(Icons.school),
-          title: Text('Grades'),
-          onTap: () {
-            // Navigator.push(
-            //   context,
-            //   MaterialPageRoute(builder: (context) => GradeListScreen()),
-            // );
-          },
-        ),
-        ListTile(
-          leading: Icon(Icons.quiz),
-          title: Text('Quizzes'),
-          // onTap: () {
-          //   Navigator.push(
-          //     context,
-          //     MaterialPageRoute(builder: (context) => QuizScreen()),
-          //   );
-          // },
-        ),
+        // ListTile(
+        //   leading: Icon(Icons.school),
+        //   title: Text('Grades'),
+        //   onTap: () {
+        //     // Navigator.push(
+        //     //   context,
+        //     //   MaterialPageRoute(builder: (context) => GradeListScreen()),
+        //     // );
+        //   },
+        // ),
+        // ListTile(
+        //   leading: Icon(Icons.quiz),
+        //   title: Text('Quizzes'),
+        //   // onTap: () {
+        //   //   Navigator.push(
+        //   //     context,
+        //   //     MaterialPageRoute(builder: (context) => QuizScreen()),
+        //   //   );
+        //   // },
+        // ),
         ListTile(
           leading: Icon(Icons.subscriptions),
           title: Text('Subscriptions'),
           onTap: () {
-            // Navigator.push(
-            //   context,
-            //   MaterialPageRoute(builder: (context) => SubscriptionScreen()),
-            // );
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => SubscriptionScreen(),
+              ),
+            );
           },
         ),
         ListTile(

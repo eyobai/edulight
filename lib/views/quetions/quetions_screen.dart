@@ -122,9 +122,44 @@ class _QuetionScreenState extends State<QuetionScreen> {
         ),
         centerTitle: true,
       ),
-      body: _isLoading
-          ? Center(child: CircularProgressIndicator())
-          : _buildQuestionCard(),
+      body: _isLoading ? _buildQuestionSkeletonLoading() : _buildQuestionCard(),
+    );
+  }
+
+  Widget _buildQuestionSkeletonLoading() {
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _skeletonBox(height: 20, width: 150),
+          SizedBox(height: 10),
+          _skeletonBox(height: 100, width: double.infinity),
+          SizedBox(height: 20),
+          Expanded(
+            child: ListView.builder(
+              itemCount: 4, // Number of skeleton options to display
+              itemBuilder: (context, index) {
+                return Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 8.0),
+                  child: _skeletonBox(height: 40, width: double.infinity),
+                );
+              },
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _skeletonBox({double height = 20, double width = double.infinity}) {
+    return Container(
+      height: height,
+      width: width,
+      decoration: BoxDecoration(
+        color: Colors.grey[300],
+        borderRadius: BorderRadius.circular(8.0),
+      ),
     );
   }
 

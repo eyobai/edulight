@@ -37,7 +37,7 @@ class ChaptersPage extends StatelessWidget {
         future: _apiService.fetchChapters(subjectId),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator());
+            return _buildChapterSkeletonLoading();
           } else if (snapshot.hasError) {
             return Center(child: Text('Error fetching chapters'));
           } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
@@ -102,6 +102,36 @@ class ChaptersPage extends StatelessWidget {
               ),
             );
           }
+        },
+      ),
+    );
+  }
+
+  Widget _buildChapterSkeletonLoading() {
+    return Padding(
+      padding: const EdgeInsets.all(12.0),
+      child: GridView.builder(
+        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 2,
+          crossAxisSpacing: 12.0,
+          mainAxisSpacing: 12.0,
+          childAspectRatio: 4 / 3,
+        ),
+        itemCount: 4, // Number of skeleton items to display
+        itemBuilder: (context, index) {
+          return Card(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(15),
+            ),
+            elevation: 4,
+            shadowColor: Colors.indigoAccent.withOpacity(0.9),
+            child: Container(
+              decoration: BoxDecoration(
+                color: Colors.grey[300],
+                borderRadius: BorderRadius.circular(15),
+              ),
+            ),
+          );
         },
       ),
     );
