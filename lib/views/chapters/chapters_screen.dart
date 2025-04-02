@@ -68,10 +68,10 @@ class ChaptersPage extends StatelessWidget {
                               QuizScreen(chapterId: chapter['id']),
                         ),
                       );
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                            content: Text('Clicked on ${chapter['name']}')),
-                      );
+                      // ScaffoldMessenger.of(context).showSnackBar(
+                      //   SnackBar(
+                      //       content: Text('Clicked on ${chapter['name']}')),
+                      // );
                     },
                     child: Card(
                       shape: RoundedRectangleBorder(

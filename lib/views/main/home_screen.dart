@@ -24,24 +24,37 @@ class _HomeScreenState extends State<HomeScreen> {
     _checkLoginStatus();
   }
 
-  void _checkLoginStatus() {
+  void _checkLoginStatus() async {
     var box = Hive.box('userBox');
+    bool isLoggedIn = box.get('isLoggedIn', defaultValue: false);
+    String? token = box.get('token');
+
+    if (!isLoggedIn || token == null) {
+      _redirectToLogin();
+      return;
+    }
+
     setState(() {
-      _isLoggedIn = box.get('isLoggedIn', defaultValue: false);
+      _isLoggedIn = isLoggedIn;
     });
   }
 
-  void _logout() {
+  void _redirectToLogin() {
     var box = Hive.box('userBox');
     box.put('isLoggedIn', false);
-    setState(() {
-      _isLoggedIn = false;
-    });
-    // Navigate to the login screen
+    box.delete('token');
+
+    // Clear user data from provider
+    Provider.of<UserProvider>(context, listen: false).clearUser();
+
     Navigator.pushReplacement(
       context,
       MaterialPageRoute(builder: (context) => LoginScreen()),
     );
+  }
+
+  void _logout() {
+    _redirectToLogin();
   }
 
   List<Widget> _getWidgetOptions() {
@@ -80,39 +93,37 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    if (!_isLoggedIn) {
-      // Redirect to login screen if not logged in
+    final user = Provider.of<UserProvider>(context).user;
+
+    // Check if user is not logged in or user data is not available
+    if (!_isLoggedIn || user == null) {
       return LoginScreen();
     }
 
-    final user = Provider.of<UserProvider>(context).user;
     return Scaffold(
       key: _scaffoldKey,
-      appBar: _selectedIndex == 0 // Check if Home tab is selected
+      appBar: _selectedIndex == 0
           ? PreferredSize(
-              preferredSize:
-                  Size.fromHeight(100), // Set the height of the AppBar
+              preferredSize: Size.fromHeight(100),
               child: ClipRRect(
                 borderRadius: BorderRadius.only(
-                  bottomRight: Radius.circular(
-                      80), // Set the radius for the bottom right corner
+                  bottomRight: Radius.circular(80),
                 ),
                 child: AppBar(
-                  automaticallyImplyLeading: false, // Remove the back button
+                  automaticallyImplyLeading: false,
                   backgroundColor: Colors.blueAccent,
                   elevation: 0,
-                  flexibleSpace: Padding(
-                    padding: const EdgeInsets.symmetric(
-                        vertical: 36, horizontal: 20),
+                  flexibleSpace: const Padding(
+                    padding: EdgeInsets.symmetric(vertical: 36, horizontal: 20),
                     child: Align(
-                      alignment:
-                          Alignment.bottomLeft, // Align text to the bottom left
+                      alignment: Alignment.bottomLeft,
                       child: Text(
-                        'Hello, ${user?.name ?? 'Guest'} 👋 ',
-                        style: const TextStyle(
+                        //  'Hello, ${user.name} 👋 ',
+                        'Hello  👋',
+                        style: TextStyle(
                           fontSize: 28,
                           fontWeight: FontWeight.bold,
-                          color: Colors.white, // Text color for contrast
+                          color: Colors.white,
                         ),
                       ),
                     ),
@@ -120,7 +131,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ),
             )
-          : null, // No AppBar for other tabs
+          : null,
       drawer: Drawer(
         child: MenuScreen(), // Use your MenuScreen here
       ),
