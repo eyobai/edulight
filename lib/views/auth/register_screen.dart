@@ -120,8 +120,26 @@ class RegisterScreen extends StatelessWidget {
                   prefixIcon: const Icon(Icons.phone),
                 ),
                 keyboardType: TextInputType.phone,
+                maxLength: 13,
+                buildCounter: (context,
+                        {required currentLength,
+                        required isFocused,
+                        maxLength}) =>
+                    null,
                 inputFormatters: [
-                  FilteringTextInputFormatter.allow(RegExp(r'^\+251\d{0,9}$')),
+                  FilteringTextInputFormatter.allow(
+                      RegExp(r'[0-9+]')), // Allow only numbers and +
+                  TextInputFormatter.withFunction((oldValue, newValue) {
+                    // Always ensure +251 prefix
+                    if (!newValue.text.startsWith('+251')) {
+                      return oldValue;
+                    }
+                    // Prevent more than 13 characters
+                    if (newValue.text.length > 13) {
+                      return oldValue;
+                    }
+                    return newValue;
+                  }),
                 ],
                 onChanged: (value) {
                   if (!value.startsWith('+251')) {
@@ -132,7 +150,13 @@ class RegisterScreen extends StatelessWidget {
                   }
                 },
                 validator: (value) {
-                  if (value == null || value.isEmpty || value.length < 12) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter your phone number';
+                  }
+                  if (!value.startsWith('+251')) {
+                    return 'Phone number must start with +251';
+                  }
+                  if (value.length < 13) {
                     return 'Please enter a valid phone number';
                   }
                   return null;
