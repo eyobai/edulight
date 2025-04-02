@@ -19,21 +19,37 @@ class ApiService {
         body: jsonEncode({'phone': email, 'password': password}),
       );
       print('Login response: ${response.body}');
+
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
-        _token = data['token']; // Store the token
+        _token = data['token'];
         var box = Hive.box('userBox');
-        box.put('token', _token); // Save token to Hive for persistence
-        box.put('isLoggedIn', true); // Set login status
-        return data; // Return the parsed data
+
+        // Print debug information
+        print('Saving user data:');
+        print('Name: ${data['user']['name']}');
+        print('Email: ${data['user']['email']}');
+        print('ID: ${data['user']['id']}');
+
+        // Save all necessary user data
+        box.put('token', _token);
+        box.put('isLoggedIn', true);
+        box.put('userId', data['user']['id'].toString());
+        box.put('userName', data['user']['name']);
+        box.put('userEmail', data['user']['email']);
+
+        return data;
+      } else if (response.statusCode == 404) {
+        throw Exception('User not found');
+      } else if (response.statusCode == 401) {
+        throw Exception('Invalid credentials');
       } else {
         print('Login failed: ${response.statusCode}');
-        return null;
+        throw Exception('Login failed: ${response.statusCode}');
       }
     } catch (e) {
       print('Error during login request: $e');
-      throw Exception(
-          'Unable to connect to the server. Please check your internet connection and try again.');
+      rethrow;
     }
   }
 
